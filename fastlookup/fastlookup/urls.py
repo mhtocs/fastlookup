@@ -16,8 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from frontend.views import index
-
+from backend.views import search
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',index,name='index')
+    path('',index,name='index'),
+    path('search',search,name='search')
 ]
