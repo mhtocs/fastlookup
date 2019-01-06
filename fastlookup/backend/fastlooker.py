@@ -1,12 +1,9 @@
 import pickle #for pickling
 import csv
 import os
-from django.conf import settings
-
-FILENAME = os.path.join(settings.BASE_DIR, 'word_search.tsv')
+from functools import lru_cache
 
 LIM = 25
-SUFFTREE = [] #Suffix tree array
 
 
 
@@ -23,6 +20,17 @@ class Node(object):
 
         return node
 
+
+def singleton(cls):
+    instances = {}
+
+    def getinstance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return getinstance
+
+    
 #better to use supressed Suffix tree
 class SuffixTree(object):
 
@@ -51,37 +59,58 @@ class SuffixTree(object):
             node = n
         return self.name
 
-w = {}
-with open(FILENAME) as f:
-    reader = csv.reader(f,delimiter='\t')
-    for i,row in enumerate(reader):
-        w[row[0]]=int(row[1])
-        if i==2000:
-        	break
 
-def getMatches(word):
-    global SUFFTREE
-    matches = []
-    try:
-        SUFFTREE = pickle.load(open(f"{FILENAME.split('.')[0]}_pickled.p","rb"))
-        print('pickle loaded')
-    except:
-        build()
-        pickle.dump(SUFFTREE,open(f"{FILENAME.split('.')[0]}_pickled.p","wb"))
-    for i in range(len(w)):
-        st = SUFFTREE[i]
-        match = st.find(word)
-        if match:
-            matches.append([match,w[match]])
-    # return matches
-    matches = sorted(matches, key=lambda x: (len(x[0]),-x[1])) #according to criteria, shortest first, and then sort by frequency
-    matches = [i[0] for i in matches[:LIM]]
-    return matches[:LIM] #retuurn the top 25
+@singleton
+class FastLooker:
+    def __init__(self, filename):
+        self.filename = filename
+        self.w = {}
+        self.SUFFTREE = []
+        with open(self.filename) as f:
+            reader = csv.reader(f,delimiter='\t')
+            for i,row in enumerate(reader):
+                self.w[row[0]]=int(row[1])
+                if i==100000:
+                    break
+        self.load()
+
+    @lru_cache(maxsize=64)
+    def getMatches(self, word):
+        matches=[]
+        for i in range(len(self.w)):
+            st = self.SUFFTREE[i]
+            match = st.find(word)
+            if match:
+                matches.append([match,self.w[match]])
+        # return matches
+        matches = sorted(matches, key=lambda x: (len(x[0]),-x[1])) #according to criteria, shortest first, and then sort by frequency
+        matches = [i[0] for i in matches[:LIM]]
+        return matches[:LIM] #retuurn the top 25
+
+    def load(self):
+        #try picked
+        try:
+            with open(f'{self.filename.split(".")[0]}_pickled.p', 'rb') as f:
+                self.SUFFTREE = pickle.load(f)
+                with open('test.txt','w+') as fl:
+                    fl.write("pickle was loaded!")
+        except:
+            self.build()
+            with open(f'{self.filename.split(".")[0]}_pickled.p', 'wb') as f:
+                pickle.dump(
+                    self.SUFFTREE,
+                    f,
+                    protocol=pickle.HIGHEST_PROTOCOL)
+    
+    def build(self):
+        print(f'Total: {len(self.w)}')
+        for j,word in enumerate(self.w):
+            print(f'building {j}:{word}')
+            self.SUFFTREE.append(SuffixTree(word))
 
 
-#function to build tree
-def build():
-    print(f'Total: {len(w)}')
-    for j,word in enumerate(w):
-        print(f'building {j}:{word}')
-        SUFFTREE.append(SuffixTree(word))
+if __name__ == "__main__":
+
+    wm = FastLooker("word_search.tsv")
+    print(wm.getMatches("pro"))
+    print(wm.getMatches("procre"))
