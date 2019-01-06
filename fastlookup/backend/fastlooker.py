@@ -1,8 +1,9 @@
 import pickle #for pickling
+import marshal
 import csv
 import os
 from functools import lru_cache
-
+from .constants import MAX
 LIM = 25
 
 
@@ -71,7 +72,7 @@ class FastLooker:
             reader = csv.reader(f,delimiter='\t')
             for i,row in enumerate(reader):
                 self.w[row[0]]=int(row[1])
-                if i==50000:
+                if i==MAX:
                     break
         self.load()
 
