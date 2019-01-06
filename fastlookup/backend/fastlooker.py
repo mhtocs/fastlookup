@@ -20,7 +20,8 @@ class Node(object):
 
         return node
 
-
+#https://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
+#single instance, so object is not created again and again
 def singleton(cls):
     instances = {}
 
@@ -59,7 +60,7 @@ class SuffixTree(object):
             node = n
         return self.name
 
-
+#single 
 @singleton
 class FastLooker:
     def __init__(self, filename):
@@ -70,11 +71,13 @@ class FastLooker:
             reader = csv.reader(f,delimiter='\t')
             for i,row in enumerate(reader):
                 self.w[row[0]]=int(row[1])
-                if i==100000:
+                if i==50000:
                     break
         self.load()
 
-    @lru_cache(maxsize=64)
+    #use memoize for caching previous calls
+    #https://stackoverflow.com/questions/1988804/what-is-memoization-and-how-can-i-use-it-in-python
+    @lru_cache(maxsize=None)
     def getMatches(self, word):
         matches=[]
         for i in range(len(self.w)):
@@ -88,12 +91,11 @@ class FastLooker:
         return matches[:LIM] #retuurn the top 25
 
     def load(self):
-        #try picked
+        #try pickled
         try:
             with open(f'{self.filename.split(".")[0]}_pickled.p', 'rb') as f:
                 self.SUFFTREE = pickle.load(f)
-                with open('test.txt','w+') as fl:
-                    fl.write("pickle was loaded!")
+        #else rebuild
         except:
             self.build()
             with open(f'{self.filename.split(".")[0]}_pickled.p', 'wb') as f:
@@ -107,10 +109,3 @@ class FastLooker:
         for j,word in enumerate(self.w):
             print(f'building {j}:{word}')
             self.SUFFTREE.append(SuffixTree(word))
-
-
-if __name__ == "__main__":
-
-    wm = FastLooker("word_search.tsv")
-    print(wm.getMatches("pro"))
-    print(wm.getMatches("procre"))
