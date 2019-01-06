@@ -30,7 +30,7 @@ first result.
 
 # Warning
 
-You can modify the MAX variable in ```fastlookup/fastlookup/backend/constants.py``` to how much of the words you want to include,
+Project uses unoptimised version of Suffix-Tree, hence data in memory gets really large. You can modify the MAX variable in ```fastlookup/fastlookup/backend/constants.py``` to how much of the words you want to include,
 Since this program is resource heavy, if you have <4GB RAM keep it <200000, otherwise you system may hang
 
 A computer with 8GB Ram is IDEAL for this project
