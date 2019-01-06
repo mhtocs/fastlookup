@@ -1,9 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Initial</title>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="./jquery.easy-autocomplete.min.js"></script> 
+	<link rel="stylesheet" href="./easy-autocomplete.min.css"> 
+	<link rel="stylesheet" href="./easy-autocomplete.themes.min.css"> 
+	<title>Instant Search</title>
+	<style type="text/css">
+		body{
+			background: #82C1EF;
+			height: 100vh;
+			font-family: 'Quicksand', sans-serif;
+		}
+
+		form{
+			margin:0 auto;
+			text-align: center;
+			height: 75%;
+			display: flex;
+			align-items: center;
+			
+		}
+
+		#search{
+			margin:0 auto;
+			font-size: 40px;
+			border:1px solid #eee;
+			width:40%;
+			padding:10px;
+			text-align: center;
+			border-radius: 7px;
+			font-family: 'Quicksand', sans-serif;
+		}
+	</style>
 </head>
 <body>
-	<h1>fastlookup...</h1>
+	<form action="">
+		<input type="text" id="box" placeholder="Enter Something" />
+	</form>
 </body>
+<script type="text/javascript">
+	var options = {
+	url: function(word) {
+		return "http://159.65.77.177/search?word=" + word;
+	},
+	getValue: "data"
+	};
+	$("#box").easyAutocomplete(options);
+</script>
 </html>
