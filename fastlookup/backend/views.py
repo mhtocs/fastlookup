@@ -12,7 +12,6 @@ fl = FastLooker(FILENAME)
 def search(req):
 	word = req.GET.get('word')
 	words = fl.getMatches(word)
-	return JsonResponse({
-		"msg":"success",
-		"data":words
-		})
+	return JsonResponse(
+		{"data":words}
+		)
