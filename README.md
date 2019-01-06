@@ -2,7 +2,7 @@
 Google instant like autocompletion for a 200000+ words dataset using suffix tree,
 
 ## Demo
-[![Preview](fastlookup.gif)](http://159.65.77.177)
+[![Preview](fatlookup.gif)](http://159.65.77.177)
 
 
 # Backend
