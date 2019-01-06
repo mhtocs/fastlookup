@@ -3,9 +3,9 @@
 <head>
 	<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-	<script src="./jquery.easy-autocomplete.min.js"></script> 
-	<link rel="stylesheet" href="./easy-autocomplete.min.css"> 
-	<link rel="stylesheet" href="./easy-autocomplete.themes.min.css"> 
+	<script src="https://code.jquery.com/jquery-migrate-3.0.0.min.js"></script>
+	<link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
 	<title>Instant Search</title>
 	<style type="text/css">
 		body{
@@ -17,7 +17,7 @@
 		form{
 			margin:0 auto;
 			text-align: center;
-			height: 75%;
+			height: 15%;
 			display: flex;
 			align-items: center;
 			
@@ -25,28 +25,40 @@
 
 		#search{
 			margin:0 auto;
-			font-size: 40px;
+			font-size: 20px;
 			border:1px solid #eee;
 			width:40%;
 			padding:10px;
-			text-align: center;
+			padding-left: 20px;
 			border-radius: 7px;
 			font-family: 'Quicksand', sans-serif;
+		}
+
+		.ui-menu-item{
+			font-size: :12px;
+			font-family: 'Quicksand',sans-serif;
 		}
 	</style>
 </head>
 <body>
 	<form action="">
-		<input type="text" id="box" placeholder="Enter Something" />
+		<input type="text" id="search" placeholder="Enter Something" />
 	</form>
 </body>
 <script type="text/javascript">
-	var options = {
-	url: function(word) {
-		return "http://159.65.77.177/search?word=" + word;
-	},
-	getValue: "data"
-	};
-	$("#box").easyAutocomplete(options);
+
+$("#search").autocomplete({
+  source: function(request, response) {
+    $.getJSON("http://159.65.77.177/search?", { word: $('#search').val() }, 
+              function(data){
+              	console.log(data.data)
+              	response(data.data);
+              });
+  },
+  select: function(event, ui){
+  }
+});
+
+
 </script>
 </html>
